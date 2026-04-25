@@ -218,6 +218,27 @@ function toCommandBlocks(value: string) {
   return commands.map((command) => `\`\`\`bash\n${command}\n\`\`\``).join('\n\n')
 }
 
+function repoDirectoryName(project: ProjectInput, name: string) {
+  const repoSlug = githubRepoSlug(project.repoUrl)
+  if (repoSlug) {
+    return repoSlug.split('/')[1]
+  }
+
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function buildCloneCommand(project: ProjectInput, name: string) {
+  if (!project.repoUrl.trim()) {
+    return '```bash\n# 从项目仓库获取代码后进入项目目录\ncd <project-directory>\n```'
+  }
+
+  return `\`\`\`bash\ngit clone ${project.repoUrl}\ncd ${repoDirectoryName(project, name)}\n\`\`\``
+}
+
 function buildAgentUsage(name: string) {
   return `## AI 调用
 
@@ -351,6 +372,10 @@ ${toMarkdownList(project.features, '待补充核心功能')}
 
 ${requirements.length ? requirements.map((item) => `- ${item}`).join('\n') : '- 待补充运行环境'}
 
+获取代码：
+
+${buildCloneCommand(project, name)}
+
 安装依赖：
 
 ${toCommandBlocks(project.installCommand)}
@@ -358,6 +383,15 @@ ${toCommandBlocks(project.installCommand)}
 启动项目：
 
 ${toCommandBlocks(project.quickStartCommand)}
+
+运行后按终端提示打开本地地址；如果端口被占用，以实际输出为准。
+
+本地检查：
+
+\`\`\`bash
+# 按项目已有脚本运行最小验证，例如 lint、test 或 build
+# npm run lint && npm run build
+\`\`\`
 
 ## 截图
 
