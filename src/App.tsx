@@ -18,6 +18,7 @@ import {
   Navigation,
   Rocket,
   Sparkles,
+  Star,
   Target,
   Users,
   Wand2,
@@ -83,13 +84,13 @@ const initialProject: ProjectInput = {
   quickStartCommand: 'npm run dev',
   requirements: 'Node.js 20+\nnpm 10+',
   features:
-    'README 结构诊断\nGitHub 搜索可读性检查\n项目定位与受众梳理\n导航、徽章、视觉素材建议\nAI / Agent 调用说明生成\nMarkdown 实时预览与复制',
+    'README 结构诊断\nGitHub 搜索可读性检查\n项目定位与受众梳理\n导航、徽章、视觉素材建议\nAI / Agent 调用说明生成\nStar 进展图生成\nMarkdown 实时预览与复制',
   badges: 'build passing\nlicense MIT\nreadme ready\ncontributors welcome',
   visualPlan:
     'README 顶部放产品截图\n用 30 秒 GIF 展示从填写项目事实到复制 README\n文档区保留安装成功截图',
   competitors: '空白 README\nAI 直接代写\n手工复制模板',
   advantages: '先评审再生成\n围绕已有项目事实\n中文与英文版本分开维护\n把贡献入口放到可见位置',
-  navItems: '功能\n快速开始\n截图\nAI 调用\n文档\n贡献\nLicense',
+  navItems: '功能\n快速开始\n截图\nAI 调用\n文档\n贡献\nLicense\nStar History',
   contributing:
     '欢迎提交 README 案例、诊断规则、模板片段和多语言翻译。请先开 issue 描述项目类型与目标读者。',
   community: 'GitHub Issues / Discussions',
@@ -142,6 +143,12 @@ const readmeStructure = [
     label: '调用',
     note: '让 AI 读懂项目并安全接手',
     Icon: Wand2,
+  },
+  {
+    title: 'Star History',
+    label: '增长',
+    note: 'README 底部展示项目 star 进展',
+    Icon: Star,
   },
 ]
 
@@ -242,6 +249,42 @@ function buildAgentUsage(name: string) {
 `
 }
 
+function githubRepoSlug(repoUrl: string) {
+  const match = repoUrl
+    .trim()
+    .match(/github\.com[:/]([^/\s]+)\/([^/\s#?]+?)(?:\.git)?(?:[/?#].*)?$/i)
+
+  if (!match) {
+    return ''
+  }
+
+  return `${match[1]}/${match[2].replace(/\.git$/i, '')}`
+}
+
+function buildStarHistory(repoUrl: string) {
+  const repoSlug = githubRepoSlug(repoUrl)
+
+  if (!repoSlug) {
+    return `## Star History
+
+待补充 GitHub 仓库地址后展示 star 进展图。
+`
+  }
+
+  const encodedRepo = encodeURIComponent(repoSlug)
+
+  return `## Star History
+
+<a href="https://www.star-history.com/#${repoSlug}&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=${encodedRepo}&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=${encodedRepo}&type=Date" />
+    <img alt="${repoSlug} Star History Chart" src="https://api.star-history.com/svg?repos=${encodedRepo}&type=Date" />
+  </picture>
+</a>
+`
+}
+
 function buildLinks(project: ProjectInput) {
   const links = [
     project.websiteUrl && `[Website](${project.websiteUrl})`,
@@ -256,7 +299,7 @@ function buildLinks(project: ProjectInput) {
 function buildNav(project: ProjectInput) {
   const navItems = splitLines(project.navItems)
   if (!navItems.length) {
-    return '[功能](#功能) · [快速开始](#快速开始) · [贡献](#贡献) · [license](#license)'
+    return '[功能](#功能) · [快速开始](#快速开始) · [贡献](#贡献) · [license](#license) · [Star History](#star-history)'
   }
 
   return navItems.map((item) => `[${item}](#${slugifyHeading(item)})`).join(' · ')
@@ -345,6 +388,8 @@ ${compact(project.contributing, '欢迎提交 issue 和 pull request。请先说
 ## License
 
 ${compact(project.license, 'MIT')}
+
+${buildStarHistory(project.repoUrl)}
 `
 }
 
@@ -396,6 +441,9 @@ function buildAudit(project: ProjectInput, generatedReadme: string): AuditItem[]
   const docsEvidence = /docs|documentation|文档|guide|指南/i.test(reviewText)
   const contributionEvidence = /contribut|贡献|issue|discussion|pull request|pr/i.test(reviewText)
   const agentEvidence = /AI 调用|Agent 调用|agent|Codex|Claude Code|Cursor Agent/i.test(reviewText)
+  const starEvidence = /Star History|star 进展|stargazers|api\.star-history\.com|starchart\.cc/i.test(
+    reviewText,
+  )
   const hasMarketingRisk = marketingRisk(reviewText)
   const hasLanguageRisk = existing ? languageRisk(existing) : false
 
@@ -459,11 +507,12 @@ function buildAudit(project: ProjectInput, generatedReadme: string): AuditItem[]
         docsEvidence,
         contributionEvidence,
         agentEvidence,
+        starEvidence,
         Boolean(project.license.trim()),
       ]),
       weight: 1.15,
-      evidence: '导航、文档、AI 调用、贡献、License 是现代 README 的基础骨架。',
-      action: '补齐导航列表、文档入口、AI 调用说明、贡献规则和 License。',
+      evidence: '导航、文档、AI 调用、贡献、License、Star 进展图是现代 README 的基础骨架。',
+      action: '补齐导航列表、文档入口、AI 调用说明、贡献规则、License 和 Star History。',
       Icon: BookOpen,
     },
     {
