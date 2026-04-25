@@ -7,7 +7,7 @@
 
 把已有开源项目整理成 10 分钟可理解的 README。
 
-[调研评审](docs/research-review.md) · [Agent 调用](docs/agent-usage.md) · [快速开始](#快速开始) · [功能](#功能) · [贡献](#贡献) · [License](#license) · [Star History](#star-history)
+[调研评审](docs/research-review.md) · [Agent 调用](#ai-调用) · [快速开始](#快速开始) · [功能](#功能) · [贡献](#贡献) · [License](#license) · [Star History](#star-history)
 
 ## 项目定位
 
@@ -86,6 +86,24 @@ npm run preview
 npm run lint
 npm run build
 ```
+
+## AI 调用
+
+如果希望让 Codex、Claude Code、Cursor Agent 等 AI agent 用 ReadmeHub 改造另一个项目的 README，可以直接把下面这段作为提示词：
+
+```text
+请使用 /Users/lishu/Documents/projects/readmehub 的 README 标准，改造 <目标项目路径> 的 README。
+
+要求：
+- 先读取 readmehub/README.md、docs/research-review.md，并参考 src/App.tsx 里的 buildGeneratedReadme 和 buildAudit 逻辑。
+- 再读取目标项目的 README、配置文件、脚本、docs 和测试入口，先基于事实改写，不要凭空编造功能。
+- README 需要包含：项目名、徽章、一句话定位、导航、项目定位表、功能、快速开始、运行流程或使用方式、AI 调用、为什么选择、项目结构、文档、贡献或维护说明、License、底部 Star 进展图。
+- 如果项目涉及医疗、财务、密钥、个人数据或本地运行状态，必须写清安全边界和不要提交的文件。
+- 改完后运行 git diff --check；如果目标项目有明确的测试/构建命令，也运行最小验证。
+- 只在我明确要求时提交和推送。
+```
+
+更完整的 agent 工作流见 [docs/agent-usage.md](docs/agent-usage.md)。
 
 ## 截图
 
