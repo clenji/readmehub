@@ -13,15 +13,18 @@ ReadmeHub 当前有两种使用方式：
 
 1. 读取 ReadmeHub 的标准：
    - `README.md`
+   - `README.en.md`
    - `docs/research-review.md`
    - `src/App.tsx` 中的 `buildGeneratedReadme()` 和 `buildAudit()`
 2. 读取目标项目事实：
    - `README.md`
+   - `README.en.md`（如果已存在）
    - `package.json`、`pyproject.toml`、`requirements.txt` 等技术栈文件
    - `docs/`、`scripts/`、`src/`、`tests/`、`LICENSE`
    - `git status --short --branch`
 3. 生成或改写目标 README：
    - 顶部放项目名、一句话定位、徽章和导航
+   - 默认写中文 `README.md`，同步准备英文 `README.en.md`，两份文档顶部互相链接
    - 前两屏说明目标读者、使用场景、技术栈和 10 分钟上手路径
    - 保留功能、快速开始、项目结构、文档、贡献、License 和底部 Star 进展图
    - 明确边界、风险和不可替代的人类判断
@@ -38,9 +41,10 @@ ReadmeHub 当前有两种使用方式：
 请使用 /Users/lishu/Documents/projects/readmehub 的 README 标准，改造 <目标项目路径> 的 README。
 
 要求：
-- 先读取 readmehub/README.md、docs/research-review.md，并参考 src/App.tsx 里的 buildGeneratedReadme 和 buildAudit 逻辑。
+- 先读取 readmehub/README.md、readmehub/README.en.md、docs/research-review.md 和 docs/agent-usage.md，并参考 src/App.tsx 里的 buildGeneratedReadme 和 buildAudit 逻辑。
 - 再读取目标项目的 README、配置文件、脚本、docs 和测试入口，先基于事实改写，不要凭空编造功能。
 - README 需要包含：项目名、徽章、一句话定位、导航、项目定位表、功能、快速开始、运行流程或使用方式、AI 调用、为什么选择、项目结构、文档、贡献或维护说明、License、底部 Star 进展图。
+- 默认写中文 README.md，并同步准备英文 README.en.md；两份文档顶部要互相链接，不要在同一份 README 中混写中英文正文。
 - 如果项目涉及医疗、财务、密钥、个人数据或本地运行状态，必须写清安全边界和不要提交的文件。
 - 改完后运行 git diff --check；如果目标项目有明确的测试/构建命令，也运行最小验证。
 - 只在我明确要求时提交和推送。
@@ -62,12 +66,13 @@ ReadmeHub 当前有两种使用方式：
 - 哪些目录是源码、文档、样例、运行数据、私有配置
 - 哪些内容不应该进入 Git
 
-然后再按 ReadmeHub 标准创建 README.md。
+然后再按 ReadmeHub 标准创建中文 README.md，并同步准备英文 README.en.md。
 ```
 
 ## 注意事项
 
 - Agent 不应该只套模板，必须先读目标项目事实。
+- Agent 应把中文和英文 README 分文件维护：默认中文 README.md，英文 README.en.md，两份文档顶部互链。
 - 对本地工具、内部项目、医疗或家庭数据项目，README 应优先写清安全边界和运行前提。
 - 对已经存在 README 的项目，优先保留真实命令、真实路径和真实限制。
 - 对外部分享来源、演讲、文章或教程，能确认作者账号时应加链接，不能确认时只写文本来源。
